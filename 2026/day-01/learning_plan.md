@@ -1,7 +1,7 @@
 # 90-Day DevOps Learning Plan
 
 ## Current Level
-Working professional with DevOps engineering experience, looking to deepen expertise and master advanced concepts.
+Working professional with DevOps engineering experience.
 
 ---
 
