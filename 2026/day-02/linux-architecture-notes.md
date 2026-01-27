@@ -289,4 +289,4 @@ systemctl daemon-reload
 
 ---
 
-==***The best way to learn is by doing it.***==
+*The best way to learn is by doing it.*
