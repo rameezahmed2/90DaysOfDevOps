@@ -201,9 +201,3 @@ To make your scripts even better, follow these "Pro" tips:
 - **Shebang Accuracy:** Use `#!/bin/bash` or `#!/usr/bin/env bash` for better portability.
 
 ---
-
-### Connect with Me
-- **LinkedIn:** [Your Profile Link Here]
-- **Hashnode:** [Your Blog Link Here]
-
-#90DaysOfDevOps #DevOpsKaJosh #TrainWithShubham #BashScripting #Automation
