@@ -80,9 +80,16 @@ Add a feature to:
 
 ---
 
-## Sample Log File
+## 📝 Sample Log File Generation
 
-A sample log file is available in this directory: `sample_log.log`
+Instead of a static file, we have provided a script to generate a dynamic sample log file for your testing!
+
+1. Run the generator script specifying the output filename and the number of lines.
+   ```bash
+   chmod +x sample_logs_generator.sh
+   ./sample_logs_generator.sh sample_log.log 500
+   ```
+2. The `sample_log.log` will now be populated with realistic log data.
 
 You can also pick real-world log datasets from the [LogHub repository](https://github.com/logpai/loghub) to test your script against production-like logs (e.g., ZooKeeper, HDFS, Apache, Linux syslogs).
 
