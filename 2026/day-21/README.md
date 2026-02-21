@@ -1,19 +1,81 @@
-# Day 21 – Shell Scripting Cheat Sheet: Build Your Own Reference Guide
+# 📝 Day 21 – Shell Scripting Cheat Sheet: Build Your Own Reference Guide
 
-## Task
+<div align="center">
 
-You've spent the last several days learning Shell scripting — from basics to real-world projects. Now it's time to consolidate everything into a **personal cheat sheet** that you can use as a quick-reference guide for the rest of your DevOps journey.
+![Day](https://img.shields.io/badge/Day-21-blue?style=for-the-badge)
+![Topic](https://img.shields.io/badge/Topic-Shell_Scripting-green?style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Completed-brightgreen?style=for-the-badge)
+![Challenge](https://img.shields.io/badge/90DaysOfDevOps-2026-orange?style=for-the-badge)
 
-The best way to revise is to **teach it back**. Writing a cheat sheet forces you to organize your understanding and identify gaps.
+*"The best way to learn is to teach. The best way to revise is to write a cheat sheet."*
+
+</div>
 
 ---
 
-## Expected Output
-- A markdown file: `shell_scripting_cheatsheet.md`
+## 🎯 Task Overview
+
+You've spent the last several days learning Shell scripting — from basics to real-world projects. Now it's time to consolidate everything into a **personal cheat sheet** that you can use as a quick-reference guide for the rest of your DevOps journey! 🚀
+
+The best way to revise is to **teach it back**. Writing a cheat sheet forces you to organize your understanding and identify specific syntax gaps.
 
 ---
 
-## Challenge Tasks
+## 📚 Learning Objectives
+
+By completing this task, you will:
+
+| # | Objective | Covered |
+|---|-----------|:-------:|
+| 1 | Solidify core Bash syntax (variables, arguments, shebang) | ✅ |
+| 2 | Master conditional logic and comparison operators | ✅ |
+| 3 | Understand all loop types and when to use each | ✅ |
+| 4 | Write reusable functions with local scope and return values | ✅ |
+| 5 | Leverage text-processing power tools (grep, awk, sed, etc.) | ✅ |
+| 6 | Collect real-world one-liners for everyday DevOps tasks | ✅ |
+| 7 | Apply best-practice error handling and debugging techniques | ✅ |
+
+---
+
+## 📦 Expected Output
+
+- 📄 **Cheat Sheet:** [`shell_scripting_cheatsheet.md`](shell_scripting_cheatsheet.md)
+  *(A definitive, 400+ line reference covering Basics, Operators, Loops, Functions, Text Processing, Patterns, Error Handling, and a Quick Reference table!)*
+
+---
+
+## 🗺️ Challenge Tasks — Section Map
+
+The cheat sheet is organized into **8 comprehensive sections**, each covering a key area of shell scripting:
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                  SHELL SCRIPTING CHEAT SHEET                 │
+├──────────────┬──────────────┬──────────────┬─────────────────┤
+│  ⚡ Quick     │  🔤 Basics    │  ⚖️ Operators │  🔄 Loops       │
+│  Reference   │  (Task 1)   │  (Task 2)    │  (Task 3)       │
+│  Table       │             │              │                 │
+│  (Task 8)    │  • Shebang  │  • Strings   │  • for          │
+│              │  • Running  │  • Integers  │  • while        │
+│  17 entries  │  • Comments │  • Files     │  • until        │
+│  covering    │  • Variables│  • if/elif   │  • break/cont.  │
+│  all topics  │  • Input    │  • Logic ops │  • File loops   │
+│              │  • Arguments│  • case      │  • read loops   │
+├──────────────┼──────────────┼──────────────┼─────────────────┤
+│  🧩 Functions │  📝 Text     │  💡 One-      │  🛡️ Error       │
+│  (Task 4)   │  Processing │  Liners      │  Handling       │
+│             │  (Task 5)   │  (Task 6)    │  (Task 7)       │
+│  • Define   │             │              │                 │
+│  • Call     │  • grep     │  10 real-    │  • Exit codes   │
+│  • Arguments│  • awk      │  world       │  • set -e/-u    │
+│  • Return   │  • sed      │  patterns    │  • pipefail     │
+│  • local    │  • cut/sort │  for DevOps  │  • set -x       │
+│             │  • uniq/tr  │  engineers   │  • trap         │
+│             │  • wc/head  │              │                 │
+└──────────────┴──────────────┴──────────────┴─────────────────┘
+```
+
+---
 
 ### Task 1: Basics
 Document the following with short descriptions and examples:
@@ -99,7 +161,7 @@ Document with examples:
 Create a summary table like this at the top of your cheat sheet:
 
 | Topic | Key Syntax | Example |
-|-------|-----------|---------|
+|-------|-----------|---------||
 | Variable | `VAR="value"` | `NAME="DevOps"` |
 | Argument | `$1`, `$2` | `./script.sh arg1` |
 | If | `if [ condition ]; then` | `if [ -f file ]; then` |
@@ -111,7 +173,29 @@ Create a summary table like this at the top of your cheat sheet:
 
 ---
 
-## Format Guidelines
+## ✅ Task Completion Checklist
+
+- [x] ⚡ **Quick Reference Table** — 17 entries covering all major syntax at a glance
+- [x] 🔤 **Basics** — Shebang, script execution, comments, variables, input, arguments
+- [x] ⚖️ **Operators & Conditionals** — String, integer, file comparisons + if/case
+- [x] 🔄 **Loops** — for, while, until, break/continue, file & line iteration
+- [x] 🧩 **Functions** — Definition, arguments, return values, local scope
+- [x] 📝 **Text Processing** — grep, awk, sed, cut, sort, uniq, tr, wc, head/tail
+- [x] 💡 **One-Liners** — 10 real-world DevOps patterns
+- [x] 🛡️ **Error Handling** — Exit codes, strict mode, debug mode, trap
+
+---
+
+## 🧠 Key Takeaways
+
+1. **Teaching is the best revision** — Writing a cheat sheet forces you to truly understand each concept rather than just recognizing it.
+2. **Strict mode is non-negotiable** — Every production script should start with `set -euo pipefail` to fail fast and catch bugs early.
+3. **Text processing is a superpower** — Mastering `grep`, `awk`, and `sed` alone covers 80% of log analysis and data extraction tasks in DevOps.
+4. **One-liners save hours** — Having a curated collection of battle-tested one-liners eliminates repetitive Googling during incident response.
+
+---
+
+## 📂 Format Guidelines
 
 Your cheat sheet should be:
 - Written in **Markdown** (`.md`)
@@ -123,17 +207,23 @@ Your cheat sheet should be:
 
 ---
 
-## Submission
+## 📤 Submission
 1. Add your `shell_scripting_cheatsheet.md` to `2026/day-21/`
 2. Commit and push to your fork
 
 ---
 
-## Learn in Public
+## 🌐 Learn in Public
 
 Share your cheat sheet on LinkedIn — help others revise too!
 
 `#90DaysOfDevOps` `#DevOpsKaJosh` `#TrainWithShubham`
 
-Happy Learning!
+---
+
+<div align="center">
+
+**Happy Learning! 🎉**  
 **TrainWithShubham**
+
+</div>
