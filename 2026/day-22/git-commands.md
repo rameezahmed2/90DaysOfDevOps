@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Git](https://img.shields.io/badge/Tool-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Updated](https://img.shields.io/badge/Updated-Day_23-blue?style=for-the-badge)
+![Updated](https://img.shields.io/badge/Updated-Day_24-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Living_Document-brightgreen?style=for-the-badge)
 
 *This reference grows daily. Every new Git concept = a new entry.*
@@ -36,6 +36,12 @@
 | 18 | `git fetch` | Download remote changes (review first) |
 | 19 | `git clone <url>` | Copy a remote repo to local machine |
 | 20 | `git stash` | Temporarily save uncommitted changes |
+| 21 | `git merge --no-ff` | Merge with explicit merge commit |
+| 22 | `git merge --squash` | Squash all commits into one |
+| 23 | `git rebase <branch>` | Replay commits on top of another branch |
+| 24 | `git cherry-pick <hash>` | Apply a specific commit to current branch |
+| 25 | `git rebase -i` | Interactive rebase (reorder, squash, edit) |
+| 26 | `git reflog` | Show history of HEAD movements |
 
 ---
 
@@ -52,6 +58,10 @@
 9. [🌐 Remote Repositories](#-9-remote-repositories)
 10. [🤝 Collaboration — Clone, Fork & Sync](#-10-collaboration--clone-fork--sync)
 11. [📦 Stashing Changes](#-11-stashing-changes)
+12. [🔀 Advanced Merging](#-12-advanced-merging)
+13. [♻️ Rebasing](#%EF%B8%8F-13-rebasing)
+14. [🍒 Cherry Picking](#-14-cherry-picking)
+15. [🔎 Reflog & Recovery](#-15-reflog--recovery)
 
 ---
 
@@ -458,6 +468,15 @@ git merge feature-1 -m "Merge feature-1 into main"
 
 > ⚠️ **Merge conflicts** occur when two branches modify the same lines. Git will ask you to resolve them manually.
 
+#### Merge Types at a Glance
+
+| Type | Command | When It Happens | Result |
+|------|---------|----------------|--------|
+| Fast-forward | `git merge branch` | Target hasn't moved | Pointer moved forward |
+| Merge commit | `git merge branch` | Both branches have new commits | New commit with 2 parents |
+| No-fast-forward | `git merge --no-ff branch` | Forced | Always creates merge commit |
+| Squash | `git merge --squash branch` | Explicit | All changes staged, no merge commit |
+
 ---
 
 ## 🌐 9. Remote Repositories
@@ -623,6 +642,201 @@ git stash clear                       # Clear ALL stashes ⚠️
 
 ---
 
+## 🔀 12. Advanced Merging
+
+### `git merge --no-ff <branch>`
+Force a merge commit even when fast-forward is possible. Preserves branch history.
+```bash
+git switch main
+git merge --no-ff feature-login
+# Always creates a merge commit, even if FF was possible
+# Useful for: seeing where a feature branch started/ended in history
+```
+
+### `git merge --squash <branch>`
+Combine all branch commits into a single changeset, staged but not committed.
+```bash
+git switch main
+git merge --squash feature-profile
+# Squash commit -- not updating HEAD
+
+# You must commit manually:
+git commit -m "Add complete profile feature"
+# Result: ONE commit containing all changes from the branch
+```
+
+### Resolving Merge Conflicts
+```bash
+# When a conflict occurs:
+git merge feature-branch
+# CONFLICT (content): Merge conflict in file.txt
+
+# 1. Open the file — find conflict markers:
+# <<<<<<< HEAD
+# your changes
+# =======
+# their changes
+# >>>>>>> feature-branch
+
+# 2. Edit the file to resolve (keep what you want)
+# 3. Stage the resolved file
+git add file.txt
+
+# 4. Complete the merge
+git commit -m "Resolve merge conflict in file.txt"
+
+# Or abort the merge entirely
+git merge --abort
+```
+
+---
+
+## ♻️ 13. Rebasing
+
+### `git rebase <branch>`
+Replay your commits on top of another branch — creates a linear history.
+```bash
+# Update feature branch with latest main
+git switch feature-dashboard
+git rebase main
+# Replays your commits on top of main's latest commit
+
+# After rebase, your commits have NEW hashes
+# The changes are the same, but the parents are different
+```
+
+### `git rebase -i <base>`
+Interactive rebase — reorder, squash, edit, or drop commits.
+```bash
+# Interactively edit the last 4 commits
+git rebase -i HEAD~4
+
+# Opens editor with:
+# pick a1b2c3d Add feature A
+# pick d4e5f6a Fix typo
+# pick b7c8d9e Add feature B
+# pick e0f1a2b Another typo fix
+
+# Change 'pick' to:
+# pick   = keep the commit as-is
+# squash = combine with previous commit
+# reword = change commit message
+# edit   = pause to amend the commit
+# drop   = remove the commit entirely
+# fixup  = like squash but discard commit message
+```
+
+### `git rebase --abort`
+Cancel a rebase in progress and return to the original state.
+```bash
+git rebase --abort
+```
+
+### `git rebase --continue`
+Continue after resolving conflicts during a rebase.
+```bash
+# After fixing conflicts:
+git add resolved-file.txt
+git rebase --continue
+```
+
+> ⚠️ **The Golden Rule:** Never rebase commits that have been pushed and shared with others. It rewrites history and will cause chaos for teammates.
+
+#### Rebase vs Merge — Quick Comparison
+
+| Aspect | Merge | Rebase |
+|--------|:-----:|:------:|
+| **History** | Non-linear (preserves branches) | Linear (straight line) |
+| **Creates extra commit?** | ✅ Merge commit | ❌ No |
+| **Rewrites commits?** | ❌ No | ✅ Yes (new hashes) |
+| **Safe for shared branches?** | ✅ Yes | ❌ No |
+| **Best for** | Integrating finished features | Keeping feature branches up-to-date |
+
+---
+
+## 🍒 14. Cherry Picking
+
+### `git cherry-pick <commit-hash>`
+Apply a specific commit from another branch onto your current branch.
+```bash
+# Find the commit hash you want
+git log --oneline feature-hotfix
+# c3c3c3c Update UI colors
+# b2b2b2b Fix critical security bug    ← want this one
+# a1a1a1a Add migration script
+
+# Cherry-pick just that one commit
+git switch main
+git cherry-pick b2b2b2b
+# [main xyz789] Fix critical security bug
+# Creates a NEW commit with the same changes
+```
+
+### Cherry-pick multiple commits
+```bash
+git cherry-pick abc1234 def5678       # Pick specific commits
+git cherry-pick abc1234..def5678      # Pick a range of commits
+```
+
+### Handling cherry-pick conflicts
+```bash
+# If conflict occurs:
+git cherry-pick abc1234
+# CONFLICT...
+
+# Resolve, then:
+git add resolved-file.txt
+git cherry-pick --continue
+
+# Or abort:
+git cherry-pick --abort
+```
+
+> 💡 **Cherry-pick is a scalpel, not a sword.** Use for isolated, specific changes (hotfixes, backports). For full features, use merge or rebase.
+
+---
+
+## 🔎 15. Reflog & Recovery
+
+### `git reflog`
+Show the history of every HEAD movement — your safety net for recovering lost commits.
+```bash
+git reflog
+# abc1234 HEAD@{0}: commit: Add new feature
+# def5678 HEAD@{1}: checkout: moving from main to feature
+# ghi9012 HEAD@{2}: commit: Update README
+# jkl3456 HEAD@{3}: rebase (finish): returning to refs/heads/feature
+```
+
+### Recover a deleted branch
+```bash
+# Oops! Deleted a branch
+git branch -D feature-important
+
+# Find the last commit hash from reflog
+git reflog
+# abc1234 HEAD@{5}: commit: Last commit on feature-important
+
+# Resurrect it!
+git switch -c feature-important abc1234
+# Branch is back with all its commits!
+```
+
+### Undo a bad rebase
+```bash
+# Find the pre-rebase state in reflog
+git reflog
+# Find the entry BEFORE the rebase started
+
+# Reset to that point
+git reset --hard HEAD@{5}
+# Your branch is back to its pre-rebase state
+```
+
+> 💡 **Reflog is your time machine.** Even after deleting branches, resetting, or rebasing, Git keeps a record of where HEAD has been for ~90 days.
+
+---
+
 ## 📊 Command Flow Diagram
 
 ```
@@ -635,6 +849,9 @@ git stash clear                       # Clear ALL stashes ⚠️
  │              │ ◀────────────   │             │                  │              │ ◀────────────   │              │
  │  (modified)  │  git restore    │  (staged)   │                  │  (committed) │  git pull/fetch  │  (pushed)    │
  └─────────────┘                  └────────────┘                   └──────────────┘                  └──────────────┘
+                                                                          │
+                                                 git rebase / git merge / git cherry-pick
+                                                 (combine branches and history)
 ```
 
 ---
@@ -645,6 +862,7 @@ git stash clear                       # Clear ALL stashes ⚠️
 |------|---------------|:---:|
 | 2026-02-21 | Initial commands: Setup, Workflow, Viewing, History, Undo, Remove | Day 22 |
 | 2026-02-22 | Branching, Switching, Remotes, Push/Pull/Fetch, Clone/Fork, Stash | Day 23 |
+| 2026-02-22 | Advanced Merging, Rebase, Cherry-Pick, Reflog & Recovery | Day 24 |
 
 ---
 
