@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Git](https://img.shields.io/badge/Tool-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Updated](https://img.shields.io/badge/Started-Day_22-blue?style=for-the-badge)
+![Updated](https://img.shields.io/badge/Updated-Day_23-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Living_Document-brightgreen?style=for-the-badge)
 
 *This reference grows daily. Every new Git concept = a new entry.*
@@ -26,6 +26,16 @@
 | 8 | `git log --oneline` | Compact commit history |
 | 9 | `git restore <file>` | Discard working directory changes |
 | 10 | `git rm <file>` | Remove file from tracking |
+| 11 | `git branch` | List, create, or delete branches |
+| 12 | `git switch <branch>` | Switch to a branch (modern) |
+| 13 | `git checkout <branch>` | Switch branches or restore files |
+| 14 | `git merge <branch>` | Merge a branch into current branch |
+| 15 | `git remote` | Manage remote connections |
+| 16 | `git push` | Upload local commits to remote |
+| 17 | `git pull` | Download + merge remote changes |
+| 18 | `git fetch` | Download remote changes (review first) |
+| 19 | `git clone <url>` | Copy a remote repo to local machine |
+| 20 | `git stash` | Temporarily save uncommitted changes |
 
 ---
 
@@ -38,6 +48,10 @@
 5. [📜 History & Logs](#-5-history--logs)
 6. [↩️ Undoing Changes](#%EF%B8%8F-6-undoing-changes)
 7. [🗑️ Removing & Ignoring Files](#%EF%B8%8F-7-removing--ignoring-files)
+8. [🌿 Branching & Switching](#-8-branching--switching)
+9. [🌐 Remote Repositories](#-9-remote-repositories)
+10. [🤝 Collaboration — Clone, Fork & Sync](#-10-collaboration--clone-fork--sync)
+11. [📦 Stashing Changes](#-11-stashing-changes)
 
 ---
 
@@ -360,11 +374,277 @@ EOF
 
 ---
 
+## 🌿 8. Branching & Switching
+
+### `git branch`
+List all local branches. The current branch is marked with `*`.
+```bash
+git branch                            # List local branches
+git branch -a                         # List ALL branches (local + remote)
+git branch -r                         # List remote branches only
+git branch -v                         # Show last commit on each branch
+```
+
+### `git branch <name>`
+Create a new branch (but stay on the current one).
+```bash
+git branch feature-1                  # Create 'feature-1' branch
+git branch bugfix/login-error         # Create with a descriptive path-style name
+```
+
+### `git branch -d <name>`
+Delete a branch that has been fully merged.
+```bash
+git branch -d feature-1               # Safe delete (only if merged)
+git branch -D feature-1               # Force delete (even if not merged) ⚠️
+```
+
+### `git branch -m <new-name>`
+Rename the current branch.
+```bash
+git branch -m new-branch-name         # Rename current branch
+git branch -m old-name new-name       # Rename a specific branch
+```
+
+> 💡 **Tip:** Use descriptive branch names with prefixes: `feature/`, `bugfix/`, `hotfix/`, `chore/`.
+
+---
+
+### `git switch <branch>`
+Switch to an existing branch (modern, recommended).
+```bash
+git switch main                       # Switch to main
+git switch feature-1                  # Switch to feature-1
+```
+
+### `git switch -c <branch>`
+Create a new branch AND switch to it in one command.
+```bash
+git switch -c feature-2               # Create + switch (one step)
+git switch -c hotfix/urgent-fix       # Create a hotfix branch and switch
+```
+
+### `git checkout <branch>`
+The classic way to switch branches (still works, but broader scope).
+```bash
+git checkout main                     # Switch to main
+git checkout -b feature-3             # Create + switch (classic way)
+```
+
+#### `git switch` vs `git checkout` — What's the Difference?
+
+| Aspect | `git switch` | `git checkout` |
+|--------|:------------:|:--------------:|
+| **Purpose** | Only switches branches | Switches branches AND restores files |
+| **Introduced** | Git 2.23 (2019) — modern | Original Git command — legacy |
+| **Create + switch** | `git switch -c <name>` | `git checkout -b <name>` |
+| **Safer?** | ✅ Yes — only does one thing | ⚠️ Overloaded — can accidentally overwrite files |
+| **Recommendation** | ✅ Preferred for switching | Use only for restoring files |
+
+> 💡 **Use `git switch` for branches, `git restore` for files.** These two replaced the overloaded `git checkout` command.
+
+---
+
+### `git merge <branch>`
+Merge a branch into the current branch.
+```bash
+# Merge feature-1 into main
+git switch main
+git merge feature-1
+
+# Merge with a commit message
+git merge feature-1 -m "Merge feature-1 into main"
+```
+
+> ⚠️ **Merge conflicts** occur when two branches modify the same lines. Git will ask you to resolve them manually.
+
+---
+
+## 🌐 9. Remote Repositories
+
+### `git remote`
+Manage connections to remote repositories.
+```bash
+git remote                            # List remote names
+git remote -v                         # List remotes with URLs (fetch + push)
+```
+
+### `git remote add <name> <url>`
+Connect your local repo to a remote repository.
+```bash
+# Add your GitHub repo as 'origin'
+git remote add origin https://github.com/rameez/devops-git-practice.git
+
+# Add the original repo as 'upstream' (for forks)
+git remote add upstream https://github.com/original/repo.git
+```
+
+### `git remote remove <name>`
+Remove a remote connection.
+```bash
+git remote remove upstream
+```
+
+### `git remote rename <old> <new>`
+Rename a remote.
+```bash
+git remote rename origin github
+```
+
+---
+
+### `git push`
+Upload local commits to the remote repository.
+```bash
+git push origin main                  # Push main branch to origin
+git push -u origin main               # Push + set upstream tracking
+git push                              # Push to tracked upstream (after -u)
+git push origin feature-1             # Push a feature branch
+git push --all origin                 # Push all branches
+git push origin --delete feature-1    # Delete remote branch
+```
+
+> 💡 **`-u` (or `--set-upstream`)** sets up tracking so future `git push` and `git pull` work without specifying the remote/branch.
+
+### `git pull`
+Download remote changes and merge them into your current branch.
+```bash
+git pull origin main                  # Fetch + merge from origin/main
+git pull                              # Pull from tracked upstream
+git pull --rebase origin main         # Fetch + rebase (cleaner history)
+```
+
+### `git fetch`
+Download remote changes WITHOUT merging (safe preview).
+```bash
+git fetch origin                      # Fetch all branches from origin
+git fetch upstream                    # Fetch from upstream remote
+git fetch --all                       # Fetch from all remotes
+
+# After fetching, review and then merge:
+git log main..origin/main             # See what's new
+git diff main origin/main             # See the actual changes
+git merge origin/main                 # Merge when ready
+```
+
+#### Fetch vs Pull — Quick Comparison
+
+| Command | Downloads? | Merges? | Safe? |
+|---------|:----------:|:-------:|:-----:|
+| `git fetch` | ✅ | ❌ | ✅ Very safe |
+| `git pull` | ✅ | ✅ | ⚠️ May cause conflicts |
+
+---
+
+## 🤝 10. Collaboration — Clone, Fork & Sync
+
+### `git clone <url>`
+Copy a remote repository to your local machine.
+```bash
+git clone https://github.com/user/repo.git           # Clone
+git clone https://github.com/user/repo.git my-folder  # Clone into custom dir
+git clone --depth 1 https://github.com/user/repo.git   # Shallow (latest only)
+git clone --branch feature-1 https://github.com/user/repo.git  # Clone specific branch
+```
+
+### Fork + Clone Workflow (Contributing to Open Source)
+```bash
+# 1. Fork on GitHub (browser — click "Fork" button)
+# 2. Clone YOUR fork
+git clone https://github.com/YOUR-USERNAME/repo.git
+cd repo
+
+# 3. Add original repo as upstream
+git remote add upstream https://github.com/ORIGINAL-OWNER/repo.git
+
+# 4. Verify remotes
+git remote -v
+# origin    https://github.com/YOUR-USERNAME/repo.git (fetch)
+# origin    https://github.com/YOUR-USERNAME/repo.git (push)
+# upstream  https://github.com/ORIGINAL-OWNER/repo.git (fetch)
+# upstream  https://github.com/ORIGINAL-OWNER/repo.git (push)
+```
+
+### Keeping Your Fork in Sync
+```bash
+# Fetch latest from original repo
+git fetch upstream
+
+# Merge upstream changes into your main
+git switch main
+git merge upstream/main
+
+# Push updated main to your fork
+git push origin main
+```
+
+---
+
+## 📦 11. Stashing Changes
+
+### `git stash`
+Temporarily save uncommitted changes so you can switch branches cleanly.
+```bash
+git stash                             # Stash all changes (staged + unstaged)
+git stash -m "WIP: login feature"     # Stash with a description
+git stash -u                          # Include untracked files
+```
+
+### `git stash list`
+Show all stashed changes.
+```bash
+git stash list
+# stash@{0}: On feature-1: WIP: login feature
+# stash@{1}: WIP on main: a1b2c3d Update README
+```
+
+### `git stash pop`
+Restore the most recent stash and remove it from the stash list.
+```bash
+git stash pop                         # Apply latest stash + delete it
+git stash pop stash@{1}               # Apply a specific stash
+```
+
+### `git stash apply`
+Restore a stash but keep it in the stash list.
+```bash
+git stash apply                       # Apply but keep stash
+git stash apply stash@{2}             # Apply specific stash
+```
+
+### `git stash drop`
+Delete a specific stash entry.
+```bash
+git stash drop stash@{0}              # Drop specific stash
+git stash clear                       # Clear ALL stashes ⚠️
+```
+
+> 💡 **Use stash when:** You're mid-work on a feature but need to quickly switch branches for a hotfix. Stash → switch → fix → switch back → pop.
+
+---
+
+## 📊 Command Flow Diagram
+
+```
+ YOU EDIT FILES
+       │
+       ▼
+ ┌─────────────┐     git add      ┌────────────┐    git commit     ┌──────────────┐     git push     ┌──────────────┐
+ │  Working     │ ────────────▶   │  Staging    │ ─────────────▶   │  Local Repo  │ ────────────▶   │  Remote Repo │
+ │  Directory   │                  │  Area       │                  │  (History)   │                  │  (GitHub)    │
+ │              │ ◀────────────   │             │                  │              │ ◀────────────   │              │
+ │  (modified)  │  git restore    │  (staged)   │                  │  (committed) │  git pull/fetch  │  (pushed)    │
+ └─────────────┘                  └────────────┘                   └──────────────┘                  └──────────────┘
+```
+
+---
+
 ## 📈 Update Log
 
 | Date | What Was Added | Day |
 |------|---------------|:---:|
 | 2026-02-21 | Initial commands: Setup, Workflow, Viewing, History, Undo, Remove | Day 22 |
+| 2026-02-22 | Branching, Switching, Remotes, Push/Pull/Fetch, Clone/Fork, Stash | Day 23 |
 
 ---
 
