@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Git](https://img.shields.io/badge/Tool-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Updated](https://img.shields.io/badge/Updated-Day_24-blue?style=for-the-badge)
+![Updated](https://img.shields.io/badge/Updated-Day_25-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Living_Document-brightgreen?style=for-the-badge)
 
 *This reference grows daily. Every new Git concept = a new entry.*
@@ -42,6 +42,10 @@
 | 24 | `git cherry-pick <hash>` | Apply a specific commit to current branch |
 | 25 | `git rebase -i` | Interactive rebase (reorder, squash, edit) |
 | 26 | `git reflog` | Show history of HEAD movements |
+| 27 | `git reset --soft` | Undo commit, keep changes staged |
+| 28 | `git reset --mixed` | Undo commit, keep changes unstaged (default) |
+| 29 | `git reset --hard` | Undo commit, delete all changes ⚠️ |
+| 30 | `git revert <hash>` | Create new commit that undoes a previous one |
 
 ---
 
@@ -62,6 +66,7 @@
 13. [♻️ Rebasing](#%EF%B8%8F-13-rebasing)
 14. [🍒 Cherry Picking](#-14-cherry-picking)
 15. [🔎 Reflog & Recovery](#-15-reflog--recovery)
+16. [⏪ Reset & Revert](#-16-reset--revert)
 
 ---
 
@@ -837,6 +842,94 @@ git reset --hard HEAD@{5}
 
 ---
 
+## ⏪ 16. Reset & Revert
+
+### `git reset --soft HEAD~1`
+Undo the last commit but **keep changes staged** (ready to re-commit).
+```bash
+git reset --soft HEAD~1               # Undo last commit, changes stay staged
+git reset --soft HEAD~3               # Undo last 3 commits, all changes staged
+
+# Use case: "I forgot to add a file to the last commit"
+git reset --soft HEAD~1
+git add forgotten-file.txt
+git commit -m "Complete commit with all files"
+```
+
+### `git reset --mixed HEAD~1`
+Undo the last commit AND unstage changes (but **keep files on disk**). This is the **default** mode.
+```bash
+git reset HEAD~1                      # Mixed is the default — same as --mixed
+git reset --mixed HEAD~1              # Explicit mixed mode
+
+# Use case: "I want to re-organize what I'm committing"
+git reset HEAD~1
+git add file-a.txt
+git commit -m "Part 1: Add file-a"
+git add file-b.txt
+git commit -m "Part 2: Add file-b"
+```
+
+### `git reset --hard HEAD~1`
+Undo the last commit, clear staging, AND **delete files from disk**. ⚠️ **Destructive!**
+```bash
+git reset --hard HEAD~1               # Undo and DELETE everything
+git reset --hard HEAD                 # Discard all uncommitted changes
+git reset --hard origin/main          # Reset to match remote exactly
+
+# ⚠️ Recovery (if commit existed before):
+git reflog
+git reset --hard HEAD@{1}             # Go back to state before the reset
+```
+
+#### Reset Modes Comparison
+
+| Mode | Commit | Staging Area | Working Directory | Destructive? |
+|------|:------:|:------------:|:-----------------:|:------------:|
+| `--soft` | ❌ Removed | ✅ Kept | ✅ Kept | 🟢 No |
+| `--mixed` | ❌ Removed | ❌ Cleared | ✅ Kept | 🟡 Partially |
+| `--hard` | ❌ Removed | ❌ Cleared | ❌ **Deleted** | 🔴 Yes |
+
+> ⚠️ **Never use `git reset` on commits that have been pushed to a shared branch.** Use `git revert` instead.
+
+---
+
+### `git revert <commit-hash>`
+Create a **new commit** that undoes the changes from a specific commit. History is preserved.
+```bash
+git revert HEAD                       # Revert the most recent commit
+git revert abc1234                    # Revert a specific commit
+git revert HEAD~2                     # Revert the commit 2 before HEAD
+```
+
+### `git revert` — Options
+```bash
+git revert --no-commit abc1234        # Apply revert changes without committing
+git revert --no-edit abc1234          # Use default revert message (skip editor)
+git revert -m 1 <merge-commit>       # Revert a merge commit (specify parent)
+
+# Revert a range of commits
+git revert HEAD~3..HEAD               # Revert last 3 commits (creates 3 reverts)
+
+# If conflict occurs:
+git revert --continue                 # After resolving conflicts
+git revert --abort                    # Cancel the revert
+```
+
+#### Reset vs Revert — When to Use
+
+| Scenario | Use Reset ✅ | Use Revert ✅ |
+|----------|:----------:|:-----------:|
+| Fix last commit **before pushing** | ✅ `--soft` | — |
+| Undo a commit on a **shared branch** | ❌ | ✅ |
+| Discard **local** experiments | ✅ `--hard` | — |
+| Need to preserve **audit trail** | ❌ | ✅ |
+| Undo a **middle** commit in history | ❌ | ✅ |
+
+> 💡 **Rule of thumb:** Pushed → `revert`. Local only → `reset`.
+
+---
+
 ## 📊 Command Flow Diagram
 
 ```
@@ -851,7 +944,7 @@ git reset --hard HEAD@{5}
  └─────────────┘                  └────────────┘                   └──────────────┘                  └──────────────┘
                                                                           │
                                                  git rebase / git merge / git cherry-pick
-                                                 (combine branches and history)
+                                                 git reset / git revert (undo operations)
 ```
 
 ---
@@ -863,6 +956,7 @@ git reset --hard HEAD@{5}
 | 2026-02-21 | Initial commands: Setup, Workflow, Viewing, History, Undo, Remove | Day 22 |
 | 2026-02-22 | Branching, Switching, Remotes, Push/Pull/Fetch, Clone/Fork, Stash | Day 23 |
 | 2026-02-22 | Advanced Merging, Rebase, Cherry-Pick, Reflog & Recovery | Day 24 |
+| 2026-02-22 | Reset (--soft/--mixed/--hard), Revert, Reset vs Revert | Day 25 |
 
 ---
 
