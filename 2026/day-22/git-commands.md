@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Git](https://img.shields.io/badge/Tool-Git-F05032?style=for-the-badge&logo=git&logoColor=white)
-![Updated](https://img.shields.io/badge/Updated-Day_25-blue?style=for-the-badge)
+![Updated](https://img.shields.io/badge/Updated-Day_26-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Living_Document-brightgreen?style=for-the-badge)
 
 *This reference grows daily. Every new Git concept = a new entry.*
@@ -46,6 +46,16 @@
 | 28 | `git reset --mixed` | Undo commit, keep changes unstaged (default) |
 | 29 | `git reset --hard` | Undo commit, delete all changes ⚠️ |
 | 30 | `git revert <hash>` | Create new commit that undoes a previous one |
+| 31 | `gh auth login` | Authenticate GitHub CLI with your account |
+| 32 | `gh repo create` | Create a new GitHub repo from terminal |
+| 33 | `gh repo clone` | Clone a repo using GitHub CLI |
+| 34 | `gh issue create` | Create an issue from the terminal |
+| 35 | `gh pr create` | Create a pull request from terminal |
+| 36 | `gh pr merge` | Merge a pull request from terminal |
+| 37 | `gh pr checkout` | Checkout a PR branch locally |
+| 38 | `gh run list` | List GitHub Actions workflow runs |
+| 39 | `gh api` | Make raw GitHub API calls |
+| 40 | `gh release create` | Create a GitHub release |
 
 ---
 
@@ -67,6 +77,7 @@
 14. [🍒 Cherry Picking](#-14-cherry-picking)
 15. [🔎 Reflog & Recovery](#-15-reflog--recovery)
 16. [⏪ Reset & Revert](#-16-reset--revert)
+17. [🖥️ GitHub CLI (`gh`)](#%EF%B8%8F-17-github-cli-gh)
 
 ---
 
@@ -930,6 +941,152 @@ git revert --abort                    # Cancel the revert
 
 ---
 
+## 🖥️ 17. GitHub CLI (`gh`)
+
+### `gh auth login`
+Authenticate the GitHub CLI with your GitHub account.
+```bash
+gh auth login                         # Interactive login (browser/token)
+gh auth login --with-token < pat.txt  # Token-based (for CI/CD)
+gh auth status                        # Check login status
+gh auth logout                        # Log out
+```
+
+### `gh repo` — Repository Management
+```bash
+# Create a new repo
+gh repo create my-project --public --description "My project" --add-readme
+gh repo create my-project --private        # Private repo
+
+# Clone a repo
+gh repo clone owner/repo                   # Clone to local machine
+
+# Fork a repo
+gh repo fork owner/repo --clone            # Fork + clone in one step
+
+# View repo details
+gh repo view owner/repo                    # View in terminal
+gh repo view --web                         # Open in browser
+
+# List your repos
+gh repo list                               # All your repos
+gh repo list --limit 20                    # With limit
+
+# Delete a repo
+gh repo delete owner/repo --yes            # ⚠️ Destructive!
+
+# Open in browser
+gh browse                                  # Open current repo
+gh browse --repo owner/repo                # Open specific repo
+```
+
+### `gh issue` — Issue Management
+```bash
+# Create an issue
+gh issue create --title "Bug report" --body "Description" --label "bug"
+gh issue create                            # Interactive mode
+
+# List issues
+gh issue list                              # Open issues
+gh issue list --state all                  # All issues
+gh issue list --label "bug"                # Filter by label
+gh issue list --assignee "@me"             # Assigned to you
+
+# View and manage
+gh issue view 1                            # View issue #1
+gh issue close 1                           # Close issue
+gh issue reopen 1                          # Reopen issue
+gh issue close 1 --comment "Fixed in PR #2"  # Close with comment
+```
+
+### `gh pr` — Pull Request Management
+```bash
+# Create a PR
+gh pr create --title "Add feature" --body "Description" --base main
+gh pr create --fill                        # Auto-fill from commits
+gh pr create --draft                       # Create as draft
+
+# List PRs
+gh pr list                                 # Open PRs
+gh pr list --state all                     # All PRs
+gh pr list --author "@me"                  # Your PRs
+
+# View and inspect
+gh pr view 2                               # View PR details
+gh pr diff 2                               # View PR diff
+gh pr checks 2                             # View CI check status
+gh pr status                               # Status of all relevant PRs
+
+# Checkout and test locally
+gh pr checkout 42                          # Checkout PR branch locally
+
+# Review
+gh pr review 42 --approve                  # Approve
+gh pr review 42 --request-changes --body "Fix tests"  # Request changes
+gh pr review 42 --comment --body "LGTM!"  # Comment
+
+# Merge
+gh pr merge 2 --merge                     # Merge commit
+gh pr merge 2 --squash --delete-branch    # Squash + delete branch
+gh pr merge 2 --rebase                    # Rebase and merge
+gh pr merge 2 --auto --squash            # Auto-merge when checks pass
+```
+
+### `gh run` & `gh workflow` — GitHub Actions
+```bash
+# List workflow runs
+gh run list                                # List recent runs
+gh run list --workflow "CI"                # Filter by workflow
+gh run list --limit 5                      # Limit results
+
+# View and monitor
+gh run view <run-id>                       # View run details
+gh run view <run-id> --log                 # View logs
+gh run watch <run-id>                      # Watch in real-time
+gh run watch --exit-status                 # Exit with run's status code
+
+# Re-run and manage
+gh run rerun <run-id>                      # Re-run
+gh run rerun <run-id> --failed             # Re-run only failed jobs
+gh run download <run-id>                   # Download artifacts
+
+# Trigger workflows
+gh workflow run deploy.yml --ref main      # Manual trigger
+gh workflow list                           # List all workflows
+gh workflow view "CI"                      # View workflow details
+```
+
+### `gh` — Power Tools
+```bash
+# API calls
+gh api user                                # Get your profile
+gh api repos/owner/repo                    # Get repo info
+gh api repos/owner/repo/contributors --jq '.[].login'  # Parse with jq
+
+# Gists
+gh gist create file.sh --public            # Create a gist
+gh gist list                               # List your gists
+gh gist view <id>                          # View a gist
+
+# Releases
+gh release create v1.0.0 --generate-notes  # Create release
+gh release list                            # List releases
+gh release download v1.0.0                 # Download assets
+
+# Aliases (custom shortcuts)
+gh alias set prs 'pr list --author "@me"'  # Create alias
+gh alias list                              # List aliases
+
+# Search
+gh search repos "devops" --sort stars      # Search repos
+gh search issues "bug" --repo owner/repo   # Search issues
+gh search prs "fix" --state open           # Search PRs
+```
+
+> 💡 **Use `--json` with most commands** for machine-readable output (perfect for scripts): `gh pr list --json number,title,state`
+
+---
+
 ## 📊 Command Flow Diagram
 
 ```
@@ -943,8 +1100,9 @@ git revert --abort                    # Cancel the revert
  │  (modified)  │  git restore    │  (staged)   │                  │  (committed) │  git pull/fetch  │  (pushed)    │
  └─────────────┘                  └────────────┘                   └──────────────┘                  └──────────────┘
                                                                           │
-                                                 git rebase / git merge / git cherry-pick
-                                                 git reset / git revert (undo operations)
+                                           git rebase / git merge / git cherry-pick
+                                           git reset / git revert (undo operations)
+                                           gh pr / gh issue / gh run (GitHub CLI)
 ```
 
 ---
@@ -957,6 +1115,7 @@ git revert --abort                    # Cancel the revert
 | 2026-02-22 | Branching, Switching, Remotes, Push/Pull/Fetch, Clone/Fork, Stash | Day 23 |
 | 2026-02-22 | Advanced Merging, Rebase, Cherry-Pick, Reflog & Recovery | Day 24 |
 | 2026-02-22 | Reset (--soft/--mixed/--hard), Revert, Reset vs Revert | Day 25 |
+| 2026-02-22 | GitHub CLI: auth, repo, issue, PR, Actions, API, gist, release, search | Day 26 |
 
 ---
 
