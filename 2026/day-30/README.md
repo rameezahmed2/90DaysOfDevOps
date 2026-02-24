@@ -86,6 +86,3 @@ Check `docker ps -a` after each step — observe the state changes.
 Share what surprised you about image layers or container states on LinkedIn.
 
 `#90DaysOfDevOps` `#DevOpsKaJosh` `#TrainWithShubham`
-
-Happy Learning!
-**TrainWithShubham**
